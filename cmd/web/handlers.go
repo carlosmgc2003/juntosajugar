@@ -5,11 +5,9 @@ import (
 	"net/http"
 )
 
-
-
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	response := struct{
-		Key string
+	response := struct {
+		Key   string
 		Value string
 	}{
 		"servidor",

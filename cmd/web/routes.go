@@ -15,6 +15,5 @@ func (app *application) routes() http.Handler {
 	mux := pat.New()
 	mux.Get("/", http.HandlerFunc(app.home))
 
-
 	return standardMiddleware.Then(mux)
 }
