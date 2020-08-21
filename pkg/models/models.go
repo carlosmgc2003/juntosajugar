@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+// struct que engloba a todos los campos comunes de las demas. Los atributos escapados
+// son para la interpretacion de librerias, en este caso gorm y json
 type commonModelFields struct {
 	ID        uint       `gorm:"primary_key" json:"id"`
 	CreatedAt time.Time  `json:"created_at"`
@@ -12,6 +14,7 @@ type commonModelFields struct {
 	DeletedAt *time.Time `json:"deleted_at"`
 }
 
+// Usuario de juntos a jugar
 type User struct {
 	commonModelFields        //ya tiene el id
 	Name              string `gorm:"unique;size:100" json:"name"`
@@ -19,6 +22,7 @@ type User struct {
 	Display_pic       string `gorm:"unique; size:100" json:"display_pic_route"`
 }
 
+// Juegos de mesa
 type Boardgame struct {
 	commonModelFields        //ya tiene el id
 	Name              string `gorm:"unique;not null;size:100" json:"name"`
@@ -26,6 +30,7 @@ type Boardgame struct {
 	Display_pic       string `gorm:"unique;size:100" json:"display_pic_route"`
 }
 
+// Reuniones para jugar
 type GameMeeting struct {
 	commonModelFields           //ya tiene el id
 	Place             string    `gorm:"unique;not null;size:100" json:"name"`

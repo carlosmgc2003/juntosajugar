@@ -6,6 +6,9 @@ import (
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
+	// Handler de ejemplo que devuele un Json indicando que el servidor esta ok
+
+	// Creo un struct anonima con los valores que quiero mandar
 	response := struct {
 		Key   string
 		Value string
@@ -14,6 +17,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		"ok",
 	}
 
+	// convierto la string en un json
 	js, err := json.Marshal(response)
 	if err != nil {
 		app.serverError(w, err)
@@ -21,5 +25,9 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(js)
+	_, err = w.Write(js)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
 }
