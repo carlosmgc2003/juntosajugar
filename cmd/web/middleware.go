@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 )
 
@@ -26,6 +25,7 @@ func (app *application) logRequest(next http.Handler) http.Handler {
 
 }
 
+/*
 func (app *application) recoverPanic(next http.Handler) http.Handler {
 	// Para cerrar las gorutinas que fallen y devolver informacion para debug al log.
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -38,3 +38,4 @@ func (app *application) recoverPanic(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+*/

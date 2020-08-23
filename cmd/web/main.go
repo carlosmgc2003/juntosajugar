@@ -38,6 +38,7 @@ func main() {
 	app := &application{
 		errorLog: errorLog,
 		infoLog:  infoLog,
+		db:       db,
 	}
 
 	// Parametros para el objeto http.Server

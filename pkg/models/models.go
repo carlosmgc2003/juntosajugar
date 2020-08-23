@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"time"
 )
@@ -8,18 +9,18 @@ import (
 // struct que engloba a todos los campos comunes de las demas. Los atributos escapados
 // son para la interpretacion de librerias, en este caso gorm y json
 type commonModelFields struct {
-	ID        uint       `gorm:"primary_key" json:"id"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
-	DeletedAt *time.Time `json:"deleted_at"`
+	ID        uint      `gorm:"primary_key" json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	DeletedAt time.Time `json:"deleted_at"`
 }
 
 // Usuario de juntos a jugar
 type User struct {
-	commonModelFields        //ya tiene el id
-	Name              string `gorm:"unique;size:100" json:"name"`
-	Email             string `gorm:"unique;not null;size:100" json:"email"`
-	Display_pic       string `gorm:"unique; size:100" json:"display_pic_route"`
+	gorm.Model         //ya tiene el id
+	Name        string `gorm:"unique;size:100" json:"name"`
+	Email       string `gorm:"unique;not null;size:100" json:"email"`
+	Display_pic string `gorm:"size:100" json:"display_pic_route"`
 }
 
 // Juegos de mesa
