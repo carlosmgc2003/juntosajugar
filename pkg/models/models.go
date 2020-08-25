@@ -1,9 +1,14 @@
 package models
 
 import (
+	"errors"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"time"
+)
+
+var (
+	ErrDuplicate = errors.New("models: duplicate insertion in DB")
 )
 
 // struct que engloba a todos los campos comunes de las demas. Los atributos escapados

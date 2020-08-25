@@ -36,9 +36,12 @@ func (app *application) health_check(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) user_creation(w http.ResponseWriter, r *http.Request) {
+	// Handler que toma el body del request, trata de Unmarshalearlo en una struct de
+	// tipo user, y si no hay duplicados responde con el mismo user en el cuerpo.
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		panic(err)
+		app.serverError(w, err)
+		return
 	}
 
 	var t models.User
@@ -53,19 +56,10 @@ func (app *application) user_creation(w http.ResponseWriter, r *http.Request) {
 		app.clientError(w, 409)
 		return
 	}
-
-	//Realizo el "pong" de respuesta
-	js, err := json.Marshal(t)
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	_, err = w.Write(js)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-
+	app.responseJson(w, body)
+	return
 }
