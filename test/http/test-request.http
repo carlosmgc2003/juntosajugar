@@ -1,0 +1,19 @@
+
+
+###
+POST  http://localhost:4000/user
+Content-Type: application/json
+
+{
+  "id": 100,
+  "name": "Frijolero",
+  "email": "frijolero@gmail.com",
+  "display_pic_route": "frijolero.jpg"
+}
+
+###
+GET  http://localhost:4000/user/100
+
+###
+
+DELETE http://localhost:4000/user/100
