@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/go-sql-driver/mysql"
 	"io/ioutil"
 	"juntosajugar/pkg/models"
 	"net/http"
@@ -47,13 +46,14 @@ func (app *application) userCreation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var nuevoUser models.User
-	err = json.Unmarshal(body, &nuevoUser)
+	err = nuevoUser.FromJson(body)
 	if err != nil {
-		app.serverError(w, err)
+		app.clientError(w, 400)
+		return
 	}
 
 	err = app.db.Create(&nuevoUser).Error
-	if err != nil && err.(*mysql.MySQLError).Number == 1062 {
+	if duplicateError(err) {
 		app.clientError(w, 409)
 		return
 	} else if err != nil {
@@ -126,7 +126,6 @@ func (app *application) userRetrievalByEmail(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	var reqUser models.User
-	app.infoLog.Print(userEmail)
 	err = app.db.Where("email = ?", userEmail).First(&reqUser).Error
 	if err != nil && err.Error() == "record not found" {
 		app.clientError(w, 404)

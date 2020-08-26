@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/go-sql-driver/mysql"
 	"net/http"
 	"runtime/debug"
 )
@@ -24,4 +25,12 @@ func (app *application) responseJson(w http.ResponseWriter, body []byte) {
 		app.serverError(w, err)
 		return
 	}
+}
+
+func duplicateError(err error) bool {
+	if err != nil {
+		return err.(*mysql.MySQLError).Number == 1062
+	}
+	return false
+
 }
