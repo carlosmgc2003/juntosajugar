@@ -64,12 +64,9 @@ func (app *application) userCreation(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) userDeletion(w http.ResponseWriter, r *http.Request) {
+	// Manejador que dada una peticion con el id en la URI, elimina al usuario y devuelve un 200 vacío.
 	userId, err := strconv.Atoi(r.URL.Query().Get(":id"))
 	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -93,11 +90,8 @@ func (app *application) userDeletion(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) userRetrieval(w http.ResponseWriter, r *http.Request) {
+	// Manejador que dada una peticion con el id de usuario en la URI, devuelve los datos del mismo en Json
 	userId, err := strconv.Atoi(r.URL.Query().Get(":id"))
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
 	if err != nil {
 		app.serverError(w, err)
 		return
