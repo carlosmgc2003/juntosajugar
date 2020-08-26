@@ -25,7 +25,7 @@ func main() {
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
 	// Inicializacion de la base de datos con el ORM
-	db, err := gorm.Open("mysql", "root:admin@/jaj?charset=utf8&parseTime=True&loc=Local")
+	db, err := gorm.Open("mysql", "api_web:api_web_pass@/juntosajugar?charset=utf8&parseTime=True&loc=Local")
 	if err != nil {
 		errorLog.Fatal(err)
 	}
@@ -49,7 +49,7 @@ func main() {
 	}
 
 	// Inicializacion del servidor.
-	infoLog.Printf("Starting server on https://localhost%s", *addr)
+	infoLog.Printf("Starting server on http://localhost%s", *addr)
 	err = srv.ListenAndServe()
 	errorLog.Fatal(err)
 
