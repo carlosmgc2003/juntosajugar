@@ -15,9 +15,11 @@ func (app *application) routes() http.Handler {
 
 	// Rutas de regla de negocio
 	mux := pat.New()
-	mux.Get("/health_check", http.HandlerFunc(app.health_check))
+	mux.Get("/health_check", http.HandlerFunc(app.healthCheck))
 
-	mux.Post("/user", http.HandlerFunc(app.user_creation))
+	mux.Post("/user", http.HandlerFunc(app.userCreation))
+	mux.Get("/user/:id", http.HandlerFunc(app.userRetrieval))
+	mux.Del("/user/:id", http.HandlerFunc(app.userDeletion))
 
 	return standardMiddleware.Then(mux)
 }
