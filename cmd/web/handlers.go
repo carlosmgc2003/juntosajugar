@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"juntosajugar/pkg/models"
 	"net/http"
+	"net/url"
 	"strconv"
 )
 
@@ -71,6 +72,7 @@ func (app *application) userDeletion(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		return
 	}
+
 	var delUser models.User
 	err = app.db.First(&delUser, userId).Error
 	if err != nil && err.Error() == "record not found" {
@@ -99,6 +101,33 @@ func (app *application) userRetrieval(w http.ResponseWriter, r *http.Request) {
 
 	var reqUser models.User
 	err = app.db.First(&reqUser, userId).Error
+	if err != nil && err.Error() == "record not found" {
+		app.clientError(w, 404)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	body, err := json.Marshal(&reqUser)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	app.responseJson(w, body)
+	return
+}
+
+func (app *application) userRetrievalByEmail(w http.ResponseWriter, r *http.Request) {
+	// Manejador que dada una peticion con el id de usuario en la URI, devuelve los datos del mismo en Json
+	encodedParameter := r.URL.Query().Get(":email")
+	userEmail, err := url.QueryUnescape(encodedParameter)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	var reqUser models.User
+	app.infoLog.Print(userEmail)
+	err = app.db.Where("email = ?", userEmail).First(&reqUser).Error
 	if err != nil && err.Error() == "record not found" {
 		app.clientError(w, 404)
 		return

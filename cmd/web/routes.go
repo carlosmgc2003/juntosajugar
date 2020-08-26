@@ -19,6 +19,7 @@ func (app *application) routes() http.Handler {
 
 	mux.Post("/user", http.HandlerFunc(app.userCreation))
 	mux.Get("/user/:id", http.HandlerFunc(app.userRetrieval))
+	mux.Get("/user/email/:email", http.HandlerFunc(app.userRetrievalByEmail))
 	mux.Del("/user/:id", http.HandlerFunc(app.userDeletion))
 
 	return standardMiddleware.Then(mux)
