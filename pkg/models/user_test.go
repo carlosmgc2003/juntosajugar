@@ -93,7 +93,7 @@ func TestValidEmail(t *testing.T) {
 
 func TestValidFilename(t *testing.T) {
 	t.Run("with Valid filename", func(t *testing.T) {
-		got := validFilename("foto_carlos.jpg")
+		got := validUserPic("foto_carlos.jpg")
 		want := true
 
 		if got != want {
@@ -102,7 +102,7 @@ func TestValidFilename(t *testing.T) {
 	})
 
 	t.Run("with invalid long filename", func(t *testing.T) {
-		got := validFilename("zxcvbnmasdfghjklqwertyuiop1234567890zxcvbnmasdfghjkl")
+		got := validUserPic("zxcvbnmasdfghjklqwertyuiop1234567890zxcvbnmasdfghjkl")
 		want := false
 
 		if got != want {
@@ -111,7 +111,7 @@ func TestValidFilename(t *testing.T) {
 	})
 
 	t.Run("with invalid short filename", func(t *testing.T) {
-		got := validFilename("zxcv")
+		got := validUserPic("zxcv")
 		want := false
 
 		if got != want {
@@ -122,7 +122,7 @@ func TestValidFilename(t *testing.T) {
 
 func TestUserSanitizeJson(t *testing.T) {
 	t.Run("with Valid Json", func(t *testing.T) {
-		mockData := User{Name: "carlosmgc2003", Email: "carlosmgc2003@yahoo.com.ar", Display_pic: "foto_carlos.jpg"}
+		mockData := User{Name: "carlosmgc2003", Email: "carlosmgc2003@yahoo.com.ar", DisplayPic: "foto_carlos.jpg"}
 		mockJson, _ := json.Marshal(mockData)
 		err := mockData.FromJson(mockJson)
 		var got bool
@@ -136,14 +136,14 @@ func TestUserSanitizeJson(t *testing.T) {
 		}
 	})
 	t.Run("with Invalid Username", func(t *testing.T) {
-		mockData := User{Name: "nahuel__salazar", Email: "carlosmgc2003@yahoo.com.ar", Display_pic: "foto_carlos.jpg"}
+		mockData := User{Name: "nahuel__salazar", Email: "carlosmgc2003@yahoo.com.ar", DisplayPic: "foto_carlos.jpg"}
 		mockJson, _ := json.Marshal(mockData)
 		err := mockData.FromJson(mockJson)
 		var got error
 		if err != nil {
 			got = err
 		}
-		want := InvalidUsername
+		want := InvalidUserName
 
 		if got != want {
 			t.Errorf("got %t want %t", got, want)
@@ -151,7 +151,7 @@ func TestUserSanitizeJson(t *testing.T) {
 	})
 
 	t.Run("with Invalid Email", func(t *testing.T) {
-		mockData := User{Name: "nahuelsalazar", Email: "carlosmgc2003", Display_pic: "foto_carlos.jpg"}
+		mockData := User{Name: "nahuelsalazar", Email: "carlosmgc2003", DisplayPic: "foto_carlos.jpg"}
 		mockJson, _ := json.Marshal(mockData)
 		err := mockData.FromJson(mockJson)
 		var got error
@@ -166,14 +166,14 @@ func TestUserSanitizeJson(t *testing.T) {
 	})
 
 	t.Run("with Invalid filename", func(t *testing.T) {
-		mockData := User{Name: "carlosmgc2003", Email: "carlosmgc2003@gmail.com", Display_pic: "foto"}
+		mockData := User{Name: "carlosmgc2003", Email: "carlosmgc2003@gmail.com", DisplayPic: "foto"}
 		mockJson, _ := json.Marshal(mockData)
 		err := mockData.FromJson(mockJson)
 		var got error
 		if err != nil {
 			got = err
 		}
-		want := InvalidFilename
+		want := InvalidUserPic
 
 		if got != want {
 			t.Errorf("got %t want %t", got, want)

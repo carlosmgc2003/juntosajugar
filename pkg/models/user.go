@@ -6,10 +6,11 @@ import (
 	"regexp"
 )
 
+// Errores especificos del modelo user
 var (
-	InvalidUsername = errors.New("User Model: Invalid Username")
+	InvalidUserName = errors.New("User Model: Invalid Username")
 	InvalidEmail    = errors.New("User Model: Invalid Email")
-	InvalidFilename = errors.New("User Model: Invalid Filename")
+	InvalidUserPic  = errors.New("User Model: Invalid Filename")
 )
 
 func (U *User) FromJson(requestBody []byte) error {
@@ -20,17 +21,17 @@ func (U *User) FromJson(requestBody []byte) error {
 	}
 	U.ID = temp_user.ID
 	if !validUsername(temp_user.Name) {
-		return InvalidUsername
+		return InvalidUserName
 	}
 	U.Name = temp_user.Name
 	if !validEmail(temp_user.Email) {
 		return InvalidEmail
 	}
 	U.Email = temp_user.Email
-	if !validFilename(temp_user.Display_pic) {
-		return InvalidFilename
+	if !validUserPic(temp_user.DisplayPic) {
+		return InvalidUserPic
 	}
-	U.Display_pic = temp_user.Display_pic
+	U.DisplayPic = temp_user.DisplayPic
 	return err
 }
 
@@ -42,15 +43,18 @@ Underscore or dot can't be used multiple times in a row (e.g user__name / user..
 */
 
 func validUsername(username string) bool {
+	// Validar el nombre de usuario de acuerdo a ese regex.
 	var re = regexp.MustCompile(`(?m)^(?:[a-zA-Z0-9]+[._]?[a-zA-Z0-9]+)+$`)
 	return re.MatchString(username) && len(username) <= 30 && len(username) >= 6
 }
 
 func validEmail(email string) bool {
+	// Validar el formato de la direccion de email.
 	var re = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 	return re.MatchString(email) && len(email) <= 100
 }
 
-func validFilename(filename string) bool {
+func validUserPic(filename string) bool {
+	// Valida el nombre de archivo de la imagen subida
 	return len(filename) >= 10 && len(filename) <= 50
 }
