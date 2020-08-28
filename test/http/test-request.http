@@ -32,3 +32,22 @@ Content-Type: application/json
   "email": "frijolero@gmail.com",
   "display_pic_route": "frijolero.jpg"
 }
+
+
+### Happy CRUD Path
+POST  http://localhost:4000/boardgame
+Content-Type: application/json
+
+{
+  "id": 100,
+  "name": "Ajedrez",
+  "class": "Estrategia",
+  "display_pic_route": "ajedrez.jpg"
+}
+
+###
+GET  http://localhost:4000/boardgame/100
+
+###
+
+DELETE http://localhost:4000/boardgame/100

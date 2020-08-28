@@ -32,5 +32,4 @@ func duplicateError(err error) bool {
 		return err.(*mysql.MySQLError).Number == 1062
 	}
 	return false
-
 }

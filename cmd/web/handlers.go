@@ -45,14 +45,14 @@ func (app *application) userCreation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var nuevoUser models.User
-	err = nuevoUser.FromJson(body)
+	var newUser models.User
+	err = newUser.FromJson(body)
 	if err != nil {
 		app.clientError(w, 400)
 		return
 	}
 
-	err = app.db.Create(&nuevoUser).Error
+	err = app.db.Create(&newUser).Error
 	if duplicateError(err) {
 		app.clientError(w, 409)
 		return
@@ -135,6 +135,88 @@ func (app *application) userRetrievalByEmail(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	body, err := json.Marshal(&reqUser)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	app.responseJson(w, body)
+	return
+}
+
+func (app *application) boardgameCreation(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	var newBordgame models.Boardgame
+	err = newBordgame.FromJson(body)
+	if err != nil {
+		app.clientError(w, 400)
+		return
+	}
+
+	err = app.db.Create(&newBordgame).Error
+	if duplicateError(err) {
+		app.clientError(w, 409)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	app.responseJson(w, body)
+	return
+}
+
+func (app *application) boardgameRetrieval(w http.ResponseWriter, r *http.Request) {
+	// Manejador que dada una peticion con el id de usuario en la URI, devuelve los datos del mismo en Json
+	boardgameId, err := strconv.Atoi(r.URL.Query().Get(":id"))
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	var reqBoardgame models.Boardgame
+	err = app.db.First(&reqBoardgame, boardgameId).Error
+	if err != nil && err.Error() == "record not found" {
+		app.clientError(w, 404)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	body, err := json.Marshal(&reqBoardgame)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	app.responseJson(w, body)
+	return
+}
+
+func (app *application) boardgameDeletion(w http.ResponseWriter, r *http.Request) {
+	// Manejador que dada una peticion con el id en la URI, elimina al usuario y devuelve un 200 vacío.
+	boardgameId, err := strconv.Atoi(r.URL.Query().Get(":id"))
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	app.infoLog.Println(boardgameId)
+
+	var delBoardgame models.Boardgame
+	err = app.db.First(&delBoardgame, boardgameId).Error
+	if err != nil && err.Error() == "record not found" {
+		app.clientError(w, 404)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	err = app.db.Unscoped().Delete(&delBoardgame).Error
 	if err != nil {
 		app.serverError(w, err)
 		return
