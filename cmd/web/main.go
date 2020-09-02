@@ -23,17 +23,19 @@ func main() {
 	// Loggers de informacion y errores para obtener visibilidad de servidor
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
-
 	// Inicializacion de la base de datos con el ORM
 	db, err := gorm.Open("mysql", "api_web:api_web_pass@/juntosajugar?charset=utf8&parseTime=True&loc=Local")
 	if err != nil {
 		errorLog.Fatal(err)
 	}
+	db.DropTableIfExists(&models.Gamemeeting{}, &models.Boardgame{}, &models.User{})
+	db.AutoMigrate(&models.Gamemeeting{}, &models.Boardgame{}, &models.User{})
 	defer db.Close()
 
 	// Migracion de los modelos de datos
-	db.AutoMigrate(&models.User{}, &models.Boardgame{}, &models.GameMeeting{})
-
+	db.AutoMigrate(&models.User{}, &models.Boardgame{}, &models.Gamemeeting{})
+	db.Model(&models.Gamemeeting{}).AddForeignKey("owner_id", "users(id)", "CASCADE", "CASCADE")
+	db.Model(&models.Gamemeeting{}).AddForeignKey("game_id", "boardgames(id)", "CASCADE", "CASCADE")
 	// Objeto de tipo aplicacion con sus dos atributos.
 	app := &application{
 		errorLog: errorLog,

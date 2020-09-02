@@ -2,9 +2,10 @@ package models
 
 import (
 	"errors"
+	"time"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"time"
 )
 
 var (
@@ -28,12 +29,13 @@ type Boardgame struct {
 }
 
 // Reuniones para jugar
-type GameMeeting struct {
+type Gamemeeting struct {
 	gorm.Model           //ya tiene el id
-	Place      string    `gorm:"unique;not null;size:100" json:"name"`
+	Place      string    `gorm:"unique;not null;size:100" json:"place"`
 	Scheduled  time.Time `json:"scheduled"`
-	Owner      User      `gorm:"foreignkey:ID;not null" json:"owner_id"`
-	Players    []User    `gorm:"foreignkey:ID;not null" json:"players"`
-	Game       Boardgame `gorm:"foreignkey:ID;not null" json:"game"`
-	MaxPlayers int       `gorm:"not null" json:"max_players"`
+	OwnerId    uint      `json:"owner"`
+	Owner      User      `gorm:"foreignKey:OwnerId"`
+	GameId     uint      `json:"game"`
+	Boardgame  Boardgame `gorm:"foreignKey:OwnerId"`
+	MaxPlayers uint      `gorm:"not null;" json:"max_players"`
 }

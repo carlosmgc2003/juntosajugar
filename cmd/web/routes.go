@@ -26,5 +26,7 @@ func (app *application) routes() http.Handler {
 	mux.Get("/boardgame/:id", http.HandlerFunc(app.boardgameRetrieval))
 	mux.Del("/boardgame/:id", http.HandlerFunc(app.boardgameDeletion))
 
+	mux.Post("/gamemeeting", http.HandlerFunc(app.gamemeetingCreation))
+
 	return standardMiddleware.Then(mux)
 }

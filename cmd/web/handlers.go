@@ -224,3 +224,31 @@ func (app *application) boardgameDeletion(w http.ResponseWriter, r *http.Request
 	app.responseJson(w, body)
 	return
 }
+
+func (app *application) gamemeetingCreation(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	var newGameMeeting models.Gamemeeting
+	err = newGameMeeting.FromJson(body, app.db)
+	app.infoLog.Println(newGameMeeting)
+	if err != nil {
+		app.serverError(w, err)
+		//app.clientError(w, 400)
+		return
+	}
+	app.infoLog.Println(newGameMeeting)
+	err = app.db.Create(&newGameMeeting).Error
+	if duplicateError(err) {
+		app.clientError(w, 409)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	app.responseJson(w, body)
+	return
+}
