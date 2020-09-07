@@ -24,7 +24,7 @@ func main() {
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 	// Inicializacion de la base de datos con el ORM
-	db, err := gorm.Open("mysql", "api_web:api_web_pass@/juntosajugar?charset=utf8&parseTime=True&loc=Local")
+	db, err := gorm.Open("mysql", "root:admin@tcp(db:3306)/juntosajugar?charset=utf8&parseTime=True&loc=Local")
 	if err != nil {
 		errorLog.Fatal(err)
 	}
