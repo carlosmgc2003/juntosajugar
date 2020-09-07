@@ -9,6 +9,9 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: juntosajugar
+      MYSQL_USER: api_web
+      MYSQL_PASSWORD: api_web_pass
     ports:
       - 3306:3306
 

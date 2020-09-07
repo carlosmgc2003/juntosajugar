@@ -2,11 +2,13 @@ package main
 
 import (
 	"flag"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"juntosajugar/pkg/models"
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 type application struct {
@@ -14,6 +16,8 @@ type application struct {
 	infoLog  *log.Logger
 	db       *gorm.DB
 }
+
+const RETRIES int = 10
 
 func main() {
 	// Obtener y parsear el numero de puerto de la linea de comandos
@@ -24,10 +28,22 @@ func main() {
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 	// Inicializacion de la base de datos con el ORM
-	db, err := gorm.Open("mysql", "root:admin@tcp(db:3306)/juntosajugar?charset=utf8&parseTime=True&loc=Local")
+	// Intentamos varias veces para solucionar la demora que requiere el contenedor de mySql para arrancar.
+	var db *gorm.DB
+	var err error
+	for i := 0; i < RETRIES; i++ {
+		db, err = gorm.Open("mysql", "api_web:api_web_pass@tcp(db:3306)/juntosajugar?charset=utf8&parseTime=True&loc=Local")
+		if err != nil {
+			infoLog.Printf("Intento de conexion %d de %d", i+1, RETRIES)
+			time.Sleep(time.Second * 2)
+		} else {
+			break
+		}
+	}
 	if err != nil {
 		errorLog.Fatal(err)
 	}
+
 	db.DropTableIfExists(&models.Gamemeeting{}, &models.Boardgame{}, &models.User{})
 	db.AutoMigrate(&models.Gamemeeting{}, &models.Boardgame{}, &models.User{})
 	defer db.Close()
