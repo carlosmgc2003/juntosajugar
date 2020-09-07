@@ -35,7 +35,7 @@ func main() {
 		db, err = gorm.Open("mysql", "api_web:api_web_pass@tcp(db:3306)/juntosajugar?charset=utf8&parseTime=True&loc=Local")
 		if err != nil {
 			infoLog.Printf("Intento de conexion %d de %d", i+1, RETRIES)
-			time.Sleep(time.Second * 2)
+			time.Sleep(time.Second * 10)
 		} else {
 			break
 		}
