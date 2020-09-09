@@ -17,6 +17,7 @@ func (app *application) routes() http.Handler {
 	mux := pat.New()
 	mux.Get("/health_check", http.HandlerFunc(app.healthCheck))
 
+	mux.Get("/user", http.HandlerFunc(app.userList))
 	mux.Post("/user", http.HandlerFunc(app.userCreation))
 	mux.Get("/user/:id", http.HandlerFunc(app.userRetrieval))
 	mux.Get("/user/email/:email", http.HandlerFunc(app.userRetrievalByEmail))

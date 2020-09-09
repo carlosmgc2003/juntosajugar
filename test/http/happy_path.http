@@ -1,16 +1,18 @@
-
+# Camino feliz sin side effects en la BD
 
 ### Happy CRUD Path
 POST  http://localhost:4000/user
 Content-Type: application/json
 
 {
-  "id": 100,
+  "id" : 100,
   "name": "Frijolero",
   "email": "frijolero@gmail.com",
   "display_pic_route": "frijolero.jpg"
 }
 
+###
+GET  http://localhost:4000/user
 ###
 GET  http://localhost:4000/user/100
 
@@ -39,7 +41,7 @@ Content-Type: application/json
 {
   "id": 100,
   "place": "Cabildo 66",
-  "scheduled": "2020-09-05T12:42:31.00-03:00",
+  "scheduled": "2021-09-05T12:42:31.00-03:00",
   "owner": 100,
   "game": 100,
   "max_players": 4

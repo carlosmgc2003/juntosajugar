@@ -1,0 +1,32 @@
+# Creacion de multiples usuarios con side effects en la BD
+
+###
+POST  http://localhost:4000/user
+Content-Type: application/json
+
+{
+  "name": "Nahuel",
+  "email": "nsalazar@gmail.com",
+  "display_pic_route": "nahuel.jpg"
+}
+
+###
+POST  http://localhost:4000/user
+Content-Type: application/json
+
+{
+  "name": "Matias",
+  "email": "matiask@gmail.com",
+  "display_pic_route": "matias.jpg"
+}
+###
+POST  http://localhost:4000/user
+Content-Type: application/json
+
+{
+  "name": "Nicolas",
+  "email": "nicodiaz@gmail.com",
+  "display_pic_route": "nicolas.jpg"
+}
+###
+GET  http://localhost:4000/user

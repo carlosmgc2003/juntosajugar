@@ -35,6 +35,19 @@ func (app *application) healthCheck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+func (app *application) userList(w http.ResponseWriter, r *http.Request) {
+	var users []models.User
+	result := app.db.Find(&users)
+	if result.Error != nil {
+		app.serverError(w, result.Error)
+		return
+	}
+	body, err := json.Marshal(users)
+	if err != nil {
+		app.serverError(w, err)
+	}
+	app.responseJson(w, body)
+}
 
 func (app *application) userCreation(w http.ResponseWriter, r *http.Request) {
 	// Handler que toma el body del request, trata de Unmarshalearlo en una struct de
