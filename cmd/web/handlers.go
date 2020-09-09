@@ -48,13 +48,13 @@ func (app *application) userCreation(w http.ResponseWriter, r *http.Request) {
 	var newUser models.User
 	err = newUser.FromJson(body)
 	if err != nil {
-		app.clientError(w, 400)
+		app.clientError(w, err.Error(), 400)
 		return
 	}
 
 	err = app.db.Create(&newUser).Error
 	if duplicateError(err) {
-		app.clientError(w, 409)
+		app.clientError(w, err.Error(), 409)
 		return
 	} else if err != nil {
 		app.serverError(w, err)
@@ -76,7 +76,7 @@ func (app *application) userDeletion(w http.ResponseWriter, r *http.Request) {
 	var delUser models.User
 	err = app.db.First(&delUser, userId).Error
 	if err != nil && err.Error() == "record not found" {
-		app.clientError(w, 404)
+		app.clientError(w, err.Error(), 404)
 		return
 	} else if err != nil {
 		app.serverError(w, err)
@@ -102,7 +102,7 @@ func (app *application) userRetrieval(w http.ResponseWriter, r *http.Request) {
 	var reqUser models.User
 	err = app.db.First(&reqUser, userId).Error
 	if err != nil && err.Error() == "record not found" {
-		app.clientError(w, 404)
+		app.clientError(w, err.Error(), 404)
 		return
 	} else if err != nil {
 		app.serverError(w, err)
@@ -128,7 +128,7 @@ func (app *application) userRetrievalByEmail(w http.ResponseWriter, r *http.Requ
 	var reqUser models.User
 	err = app.db.Where("email = ?", userEmail).First(&reqUser).Error
 	if err != nil && err.Error() == "record not found" {
-		app.clientError(w, 404)
+		app.clientError(w, err.Error(), 404)
 		return
 	} else if err != nil {
 		app.serverError(w, err)
@@ -153,13 +153,13 @@ func (app *application) boardgameCreation(w http.ResponseWriter, r *http.Request
 	var newBordgame models.Boardgame
 	err = newBordgame.FromJson(body)
 	if err != nil {
-		app.clientError(w, 400)
+		app.clientError(w, err.Error(), 400)
 		return
 	}
 
 	err = app.db.Create(&newBordgame).Error
 	if duplicateError(err) {
-		app.clientError(w, 409)
+		app.clientError(w, err.Error(), 409)
 		return
 	} else if err != nil {
 		app.serverError(w, err)
@@ -180,7 +180,7 @@ func (app *application) boardgameRetrieval(w http.ResponseWriter, r *http.Reques
 	var reqBoardgame models.Boardgame
 	err = app.db.First(&reqBoardgame, boardgameId).Error
 	if err != nil && err.Error() == "record not found" {
-		app.clientError(w, 404)
+		app.clientError(w, err.Error(), 404)
 		return
 	} else if err != nil {
 		app.serverError(w, err)
@@ -210,7 +210,7 @@ func (app *application) boardgameDeletion(w http.ResponseWriter, r *http.Request
 	var delBoardgame models.Boardgame
 	err = app.db.First(&delBoardgame, boardgameId).Error
 	if err != nil && err.Error() == "record not found" {
-		app.clientError(w, 404)
+		app.clientError(w, err.Error(), 404)
 		return
 	} else if err != nil {
 		app.serverError(w, err)
@@ -236,14 +236,13 @@ func (app *application) gamemeetingCreation(w http.ResponseWriter, r *http.Reque
 	err = newGameMeeting.FromJson(body, app.db)
 	app.infoLog.Println(newGameMeeting)
 	if err != nil {
-		app.serverError(w, err)
-		//app.clientError(w, 400)
+		app.clientError(w, err.Error(), 400)
 		return
 	}
 	app.infoLog.Println(newGameMeeting)
 	err = app.db.Create(&newGameMeeting).Error
 	if duplicateError(err) {
-		app.clientError(w, 409)
+		app.clientError(w, err.Error(), 409)
 		return
 	} else if err != nil {
 		app.serverError(w, err)

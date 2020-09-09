@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/go-sql-driver/mysql"
 	"net/http"
@@ -14,8 +15,20 @@ func (app *application) serverError(w http.ResponseWriter, err error) {
 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 }
 
-func (app *application) clientError(w http.ResponseWriter, status int) {
-	http.Error(w, http.StatusText(status), status)
+func (app *application) clientError(w http.ResponseWriter, message string, status int) {
+	response := struct {
+		Error  string
+		Status int
+	}{
+		message,
+		status,
+	}
+	// convierto la string en un json
+	js, err := json.Marshal(response)
+	if err != nil {
+		app.serverError(w, err)
+	}
+	http.Error(w, string(js), status)
 }
 
 func (app *application) responseJson(w http.ResponseWriter, body []byte) {
