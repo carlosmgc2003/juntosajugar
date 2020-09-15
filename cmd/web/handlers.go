@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func (app *application) healthCheck(w http.ResponseWriter, r *http.Request) {
+func (app *application) healthCheck(w http.ResponseWriter, _ *http.Request) {
 	// Handler de ejemplo que devuele un Json indicando que el servidor esta ok
 
 	// Creo un struct anonima con los valores que quiero mandar
@@ -35,7 +35,8 @@ func (app *application) healthCheck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
-func (app *application) userList(w http.ResponseWriter, r *http.Request) {
+func (app *application) userList(w http.ResponseWriter, _ *http.Request) {
+	enableCors(&w) //insecure
 	var users []models.User
 	result := app.db.Find(&users)
 	if result.Error != nil {
@@ -263,4 +264,8 @@ func (app *application) gamemeetingCreation(w http.ResponseWriter, r *http.Reque
 	}
 	app.responseJson(w, body)
 	return
+}
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 }
