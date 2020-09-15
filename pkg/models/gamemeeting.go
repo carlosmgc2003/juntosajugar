@@ -20,8 +20,8 @@ func (G *Gamemeeting) FromJson(requestBody []byte, db *gorm.DB) error {
 		Id         uint   `json:"id"`
 		Place      string `json:"place"`
 		Scheduled  string `json:"scheduled"`
-		Owner      uint   `json:"owner"`
-		Game       uint   `json:"game"`
+		OwnerId    uint   `json:"owner"`
+		GameId     uint   `json:"game"`
 		MaxPlayers uint   `json:"max_players"`
 	}
 	var temp tempStruct
@@ -30,10 +30,25 @@ func (G *Gamemeeting) FromJson(requestBody []byte, db *gorm.DB) error {
 		return err
 	}
 	G.ID = temp.Id
+	if !validMeetingPlace(temp.Place) {
+		return InvalidMeetingPlace
+	}
 	G.Place = temp.Place
 	G.Scheduled, err = time.Parse(time.RFC3339, temp.Scheduled)
-	G.OwnerId = temp.Owner
-	G.GameId = temp.Game
+	if err != nil || !validScheduledTime(G.Scheduled) {
+		return InvalidMeetingSchedule
+	}
+	if !validOwner(temp.OwnerId, db) {
+		return InvalidMeetingOwner
+	}
+	G.OwnerId = temp.OwnerId
+	if !validGame(temp.GameId, db) {
+		return InvalidBoardgame
+	}
+	G.GameId = temp.GameId
+	if !validMaxPlayers(temp.MaxPlayers) {
+		return InvalidMaxPlayers
+	}
 	G.MaxPlayers = temp.MaxPlayers
 	return err
 }
@@ -47,18 +62,19 @@ func validScheduledTime(scheduledtime time.Time) bool {
 	return time.Now().Before(scheduledtime)
 }
 
-func validOwner(ownerid int, db *gorm.DB) bool {
+func validOwner(ownerid uint, db *gorm.DB) bool {
 	var owner User
 	result := db.First(&owner, ownerid)
-	return errors.Is(result.Error, gorm.ErrRecordNotFound)
+	// Hay que devolver not error is por que la logica de la func es preguntar si es valido el owner
+	return !errors.Is(result.Error, gorm.ErrRecordNotFound)
 }
 
-func validGame(gameid int, db *gorm.DB) bool {
+func validGame(gameid uint, db *gorm.DB) bool {
 	var game Boardgame
 	result := db.First(&game, gameid)
-	return errors.Is(result.Error, gorm.ErrRecordNotFound)
+	return !errors.Is(result.Error, gorm.ErrRecordNotFound)
 }
 
-func validMaxPlayers(maxplayers int) bool {
+func validMaxPlayers(maxplayers uint) bool {
 	return maxplayers <= 12
 }
