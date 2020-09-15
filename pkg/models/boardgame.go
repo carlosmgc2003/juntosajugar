@@ -38,7 +38,7 @@ func (B *Boardgame) FromJson(requestBody []byte) error {
 
 func validGameName(gamename string) bool {
 	// Validar un string de nombre de juego
-	return len(gamename) <= 100
+	return len(gamename) <= 100 && len(gamename) > 2
 }
 
 func validGameClass(gameclass string) bool {
