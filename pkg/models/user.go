@@ -11,6 +11,7 @@ var (
 	InvalidUserName = errors.New("User Model: Invalid Username")
 	InvalidEmail    = errors.New("User Model: Invalid Email")
 	InvalidUserPic  = errors.New("User Model: Invalid Filename")
+	InvalidIdToken  = errors.New("User Model: Invalid Id Token")
 )
 
 func (U *User) FromJson(requestBody []byte) error {
@@ -32,19 +33,23 @@ func (U *User) FromJson(requestBody []byte) error {
 		return InvalidUserPic
 	}
 	U.DisplayPic = temp_user.DisplayPic
+	if !validIdToken(temp_user.IdToken) {
+		return InvalidIdToken
+	}
+	U.IdToken = temp_user.IdToken
 	return err
 }
 
 /*
-Only contains alphanumeric characters, underscore and dot.
-Underscore and dot can't be at the end or start of a username (e.g _username / username_ / .username / username.).
-Underscore and dot can't be next to each other (e.g user_.name).
-Underscore or dot can't be used multiple times in a row (e.g user__name / user..name).
+Nombres Occidentales validos ja!
+Mathias d'Arras
+Martin Luther King, Jr.
+Hector Sausage-Hausen
 */
 
 func validUsername(username string) bool {
 	// Validar el nombre de usuario de acuerdo a ese regex.
-	var re = regexp.MustCompile(`(?m)^(?:[a-zA-Z0-9]+[._]?[a-zA-Z0-9]+)+$`)
+	var re = regexp.MustCompile("^[[:alpha:] ,.'-]+$")
 	return re.MatchString(username) && len(username) <= 30 && len(username) >= 6
 }
 
@@ -56,5 +61,9 @@ func validEmail(email string) bool {
 
 func validUserPic(filename string) bool {
 	// Valida el nombre de archivo de la imagen subida
-	return len(filename) >= 10 && len(filename) <= 50
+	return len(filename) <= 100
+}
+
+func validIdToken(token string) bool {
+	return len(token) <= 1500
 }

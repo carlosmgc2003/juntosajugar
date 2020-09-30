@@ -18,6 +18,7 @@ type User struct {
 	Name       string `gorm:"unique;size:100" json:"name"`
 	Email      string `gorm:"unique;not null;size:100" json:"email"`
 	DisplayPic string `gorm:"size:100" json:"display_pic_route"`
+	IdToken    string `gorm:"size:1500" json:"tokenId"`
 }
 
 // Juegos de mesa

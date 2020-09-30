@@ -36,7 +36,6 @@ func (app *application) healthCheck(w http.ResponseWriter, _ *http.Request) {
 	}
 }
 func (app *application) userList(w http.ResponseWriter, _ *http.Request) {
-	enableCors(&w) //insecure
 	var users []models.User
 	result := app.db.Find(&users)
 	if result.Error != nil {
@@ -58,7 +57,6 @@ func (app *application) userCreation(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		return
 	}
-
 	var newUser models.User
 	err = newUser.FromJson(body)
 	if err != nil {
@@ -264,8 +262,4 @@ func (app *application) gamemeetingCreation(w http.ResponseWriter, r *http.Reque
 	}
 	app.responseJson(w, body)
 	return
-}
-
-func enableCors(w *http.ResponseWriter) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 }

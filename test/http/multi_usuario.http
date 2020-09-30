@@ -5,7 +5,7 @@ POST  http://localhost:4000/user
 Content-Type: application/json
 
 {
-  "name": "Nahuel",
+  "name": "Nahuel Salazar",
   "email": "nsalazar@gmail.com",
   "display_pic_route": "nahuel.jpg"
 }
@@ -15,7 +15,7 @@ POST  http://localhost:4000/user
 Content-Type: application/json
 
 {
-  "name": "Matias",
+  "name": "Matias Kobold",
   "email": "matiask@gmail.com",
   "display_pic_route": "matias.jpg"
 }
@@ -24,9 +24,27 @@ POST  http://localhost:4000/user
 Content-Type: application/json
 
 {
-  "name": "Nicolas",
+  "name": "Nicolas Diaz Pais",
   "email": "nicodiaz@gmail.com",
   "display_pic_route": "nicolas.jpg"
 }
+###
+POST  http://localhost:4000/user
+Content-Type: application/json
+
+{
+"name": "Ezequiel Cabrera",
+"email": "ezecabj@gmail.com"
+}
+###
+POST  http://localhost:4000/user
+Content-Type: application/json
+
+{
+  "name": "Uriel Santon",
+  "email": "usanton@gmail.com",
+  "tokenId": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjJjNmZhNmY1OTUwYTdjZTQ2NWZjZjI0N2FhMGIwOTQ4MjhhYzk1MmMiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiODM2NDgzNzI2NTkwLTRrcm1iZG5rdW9vNjB0bGZsOWtiazltbG9mNTU4c2xpLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiODM2NDgzNzI2NTkwLTRrcm1iZG5rdW9vNjB0bGZsOWtiazltbG9mNTU4c2xpLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTE3MjYyNzkyODMwNjM4NjA5NDY4IiwiaGQiOiJmaWUudW5kZWYuZWR1LmFyIiwiZW1haWwiOiJjbWFjZWlyYUBmaWUudW5kZWYuZWR1LmFyIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF0X2hhc2giOiJEU3lkdkxrNlJMVWFlSXU5b1c1eVFRIiwibmFtZSI6Ik1hY2VpcmEgQ2FybG9zIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hLS9BT2gxNEdoN0swVGFyVlBrcjVwekdNNHpxN3NDRVktV0RqZW1ZS2prUGxrST1zOTYtYyIsImdpdmVuX25hbWUiOiJNYWNlaXJhIiwiZmFtaWx5X25hbWUiOiJDYXJsb3MiLCJsb2NhbGUiOiJlcyIsImlhdCI6MTYwMTQ3ODY5OSwiZXhwIjoxNjAxNDgyMjk5LCJqdGkiOiIxNTAzZWE1MzJhZThjZjQwZDZmZjBlNGFiZDA4YWUyMTM3Y2I4M2JjIn0.FivJwpDcfaGt80JBdg2lH-IkkSHScUinVJPdzvs3OtFahzip3oMawl4Ys3y2OpcKQy6KyYqi7DDO48bFisTfc6ECG1KiDZTCLAMupxIw8V8IBzN4ZrqQgGgHMsECaADdGC9iIHKRpKOcYSAHV2qlTG6Dg8hc7G8sf-kWT-S-iaqTBQLj_Bg01HIwOE3zZR12qVzBqOMVYJGpcYJJeVsBem4swi8jAi64LGIGLIIcMKobd8DAvPQYArf6JtxRAC0LdjDy_2TWauXXG1uYUUox87K5iXbTuX3nVql9nKcQuVrBmDjLsmcvRthTtY1v8TWn6h-j9oXDVxCpcrFRkcc-Kg"
+}
+
 ###
 GET  http://localhost:4000/user
