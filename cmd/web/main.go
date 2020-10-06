@@ -5,6 +5,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golangcollege/sessions"
 	"github.com/jinzhu/gorm"
+	"golang.org/x/crypto/bcrypt"
 	"juntosajugar/pkg/models"
 	"log"
 	"net/http"
@@ -65,6 +66,16 @@ func main() {
 		session:  session,
 		db:       db,
 	}
+
+	// Creacion del usuario Admin de JaJ
+	hashedAdminPass, _ := bcrypt.GenerateFromPassword([]byte("admin"), 12)
+
+	var adminUser models.User = models.User{
+		Email:          "admin@juntosajugar.com",
+		HashedPassword: string(hashedAdminPass),
+	}
+
+	app.db.Create(&adminUser)
 
 	// Parametros para el objeto http.Server
 	srv := &http.Server{
