@@ -52,3 +52,9 @@ DELETE http://localhost:4000/boardgame/100
 
 ###
 DELETE http://localhost:4000/user/100
+
+###
+GET http://localhost:4000/user/email/cmaceira@fie.undef.edu.ar
+
+###
+GET http://localhost:4000/user/email/carlosmgc2003@gmail.com

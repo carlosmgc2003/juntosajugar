@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/golangcollege/sessions"
 	"github.com/jinzhu/gorm"
 	"juntosajugar/pkg/models"
 	"log"
@@ -14,6 +15,7 @@ import (
 type application struct {
 	errorLog *log.Logger
 	infoLog  *log.Logger
+	session  *sessions.Session
 	db       *gorm.DB
 }
 
@@ -22,6 +24,7 @@ const RETRIES int = 10
 func main() {
 	// Obtener y parsear el numero de puerto de la linea de comandos
 	addr := flag.String("addr", ":4000", "HTTP network address")
+	secret := flag.String("secret", "s6Ndh+pPbnzHbS*+9Pk8qGWhTzbpa@ge", "Secret key")
 	flag.Parse()
 
 	// Loggers de informacion y errores para obtener visibilidad de servidor
@@ -53,9 +56,13 @@ func main() {
 	db.Model(&models.Gamemeeting{}).AddForeignKey("owner_id", "users(id)", "CASCADE", "CASCADE")
 	db.Model(&models.Gamemeeting{}).AddForeignKey("game_id", "boardgames(id)", "CASCADE", "CASCADE")
 	// Objeto de tipo aplicacion con sus dos atributos.
+	session := sessions.New([]byte(*secret))
+	session.Lifetime = 12 * time.Hour
+
 	app := &application{
 		errorLog: errorLog,
 		infoLog:  infoLog,
+		session:  session,
 		db:       db,
 	}
 

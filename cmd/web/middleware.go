@@ -35,6 +35,26 @@ func (app *application) logRequest(next http.Handler) http.Handler {
 
 }
 
+func (app *application) authenticateUser(r *http.Request) bool {
+	var email = app.session.GetString(r, "email")
+	app.infoLog.Println(email)
+	if len(email) <= 0 {
+		return false
+	}
+	return true
+}
+
+func (app *application) restrictedEndpoint(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !app.authenticateUser(r) {
+			app.clientError(w, "Unauthorized", 401)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+
+}
+
 /*
 func (app *application) recoverPanic(next http.Handler) http.Handler {
 	// Para cerrar las gorutinas que fallen y devolver informacion para debug al log.

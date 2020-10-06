@@ -35,9 +35,68 @@ func (app *application) healthCheck(w http.ResponseWriter, _ *http.Request) {
 		return
 	}
 }
-func (app *application) userList(w http.ResponseWriter, _ *http.Request) {
+
+func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	var newLogin models.Login
+	var tempUser models.User
+	err = newLogin.FromJson(body)
+	if err != nil {
+		app.clientError(w, err.Error(), 400)
+		return
+	}
+	app.infoLog.Println(newLogin)
+	err = app.db.Where("email = ?", newLogin.Email).First(&tempUser).Error
+	if err != nil && err.Error() == "record not found" {
+		app.clientError(w, err.Error(), 404)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	err = tempUser.Authenticate(newLogin)
+	if err != nil {
+		app.clientError(w, err.Error(), 401)
+	}
+	app.session.Put(r, "email", tempUser.Email)
+	app.session.Put(r, "user_id", tempUser.ID)
+	return
+}
+
+func (app *application) userLogout(w http.ResponseWriter, r *http.Request) {
+	app.session.Remove(r, "email")
+	app.session.Remove(r, "user_id")
+	response := struct {
+		Key   string
+		Value string
+	}{
+		"logout",
+		"ok",
+	}
+
+	// convierto la string en un json
+	js, err := json.Marshal(response)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_, err = w.Write(js)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+}
+
+func (app *application) userList(w http.ResponseWriter, r *http.Request) {
 	var users []models.User
 	result := app.db.Find(&users)
+
 	if result.Error != nil {
 		app.serverError(w, result.Error)
 		return
@@ -58,6 +117,7 @@ func (app *application) userCreation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var newUser models.User
+
 	err = newUser.FromJson(body)
 	if err != nil {
 		app.clientError(w, err.Error(), 400)

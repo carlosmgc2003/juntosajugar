@@ -1,0 +1,32 @@
+###
+POST  http://localhost:4000/user
+Content-Type: application/json
+
+{
+  "name": "Ezequiel Cabrera",
+  "email": "ezecabj@gmail.com",
+  "password": "tuty2020"
+}
+
+
+###
+GET  http://localhost:4000/user
+
+###
+GET  http://localhost:4000/user/email/ezecabj@gmail.com
+
+###
+POST  http://localhost:4000/login
+Content-Type: application/json
+
+{
+  "email": "ezecabj@gmail.com",
+  "password": "tuty2020"
+}
+> {% let session = response.headers.valueOf("session"); %}
+###
+GET  http://localhost:4000/user/email/ezecabj@gmail.com
+Set-Cookie: {{session}}
+
+###
+GET  http://localhost:4000/logout
