@@ -49,7 +49,6 @@ func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {
 		app.clientError(w, err.Error(), 400)
 		return
 	}
-	app.infoLog.Println(newLogin)
 	err = app.db.Where("email = ?", newLogin.Email).First(&tempUser).Error
 	if err != nil && err.Error() == "record not found" {
 		app.clientError(w, err.Error(), 404)
@@ -222,14 +221,14 @@ func (app *application) boardgameCreation(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	var newBordgame models.Boardgame
-	err = newBordgame.FromJson(body)
+	var newBoardgame models.Boardgame
+	err = newBoardgame.FromJson(body)
 	if err != nil {
 		app.clientError(w, err.Error(), 400)
 		return
 	}
 
-	err = app.db.Create(&newBordgame).Error
+	err = app.db.Create(&newBoardgame).Error
 	if duplicateError(err) {
 		app.clientError(w, err.Error(), 409)
 		return
@@ -306,12 +305,10 @@ func (app *application) gamemeetingCreation(w http.ResponseWriter, r *http.Reque
 
 	var newGameMeeting models.Gamemeeting
 	err = newGameMeeting.FromJson(body, app.db)
-	app.infoLog.Println(newGameMeeting)
 	if err != nil {
 		app.clientError(w, err.Error(), 400)
 		return
 	}
-	app.infoLog.Println(newGameMeeting)
 	err = app.db.Create(&newGameMeeting).Error
 	if duplicateError(err) {
 		app.clientError(w, err.Error(), 409)

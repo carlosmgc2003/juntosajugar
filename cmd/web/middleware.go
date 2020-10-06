@@ -37,7 +37,6 @@ func (app *application) logRequest(next http.Handler) http.Handler {
 
 func (app *application) authenticateUser(r *http.Request) bool {
 	var email = app.session.GetString(r, "email")
-	app.infoLog.Println(email)
 	if len(email) <= 0 {
 		return false
 	}
