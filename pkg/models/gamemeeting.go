@@ -13,15 +13,17 @@ var (
 	InvalidMeetingOwner    = errors.New("Gamemeeting Model: Invalid Owner ID")
 	InvalidBoardgame       = errors.New("Gamemeeting Model: Invalid Boardgame ID")
 	InvalidMaxPlayers      = errors.New("Gamemeeting Model: Invalid Max Players Quantity")
+	InvalidTooManyPlayers  = errors.New("Gamemeeting Model: Too many players JSON")
+	InvalidPlayer          = errors.New("Gamemeeting Model: Invalid Player")
 )
 
 func (G *Gamemeeting) FromJson(requestBody []byte, db *gorm.DB) error {
 	type tempStruct struct {
-		Id         uint   `json:"id"`
 		Place      string `json:"place"`
 		Scheduled  string `json:"scheduled"`
 		OwnerId    uint   `json:"owner"`
 		GameId     uint   `json:"game"`
+		Players    []uint `json:"players"`
 		MaxPlayers uint   `json:"max_players"`
 	}
 	var temp tempStruct
@@ -29,7 +31,6 @@ func (G *Gamemeeting) FromJson(requestBody []byte, db *gorm.DB) error {
 	if err != nil {
 		return err
 	}
-	G.ID = temp.Id
 	if !validMeetingPlace(temp.Place) {
 		return InvalidMeetingPlace
 	}
@@ -38,18 +39,48 @@ func (G *Gamemeeting) FromJson(requestBody []byte, db *gorm.DB) error {
 	if err != nil || !validScheduledTime(G.Scheduled) {
 		return InvalidMeetingSchedule
 	}
-	if !validOwner(temp.OwnerId, db) {
+	if !validUser(temp.OwnerId, db) {
 		return InvalidMeetingOwner
 	}
-	G.OwnerId = temp.OwnerId
+	// Asignar el owner al boardgame
+	var tempOwner User
+	err = db.First(&tempOwner, temp.OwnerId).Error
+	if err != nil {
+		return err
+	}
+	G.Owner = tempOwner
+
 	if !validGame(temp.GameId, db) {
 		return InvalidBoardgame
 	}
-	G.GameId = temp.GameId
+
+	var tempBoardgame Boardgame
+	err = db.First(&tempBoardgame, temp.GameId).Error
+	if err != nil {
+		return err
+	}
+	G.Boardgame = tempBoardgame
+
 	if !validMaxPlayers(temp.MaxPlayers) {
 		return InvalidMaxPlayers
 	}
 	G.MaxPlayers = temp.MaxPlayers
+
+	if len(temp.Players) > int(temp.MaxPlayers) {
+		return InvalidTooManyPlayers
+	}
+	for _, playerId := range temp.Players {
+		var tempPlayer User
+		if !validUser(playerId, db) {
+			return InvalidPlayer
+		}
+		err = db.First(&tempPlayer, playerId).Error
+		if err != nil {
+			return err
+		}
+		G.Players = append(G.Players, tempPlayer)
+	}
+
 	return err
 }
 
@@ -62,7 +93,7 @@ func validScheduledTime(scheduledtime time.Time) bool {
 	return time.Now().Before(scheduledtime)
 }
 
-func validOwner(ownerid uint, db *gorm.DB) bool {
+func validUser(ownerid uint, db *gorm.DB) bool {
 	var owner User
 	result := db.First(&owner, ownerid)
 	// Hay que devolver not error is por que la logica de la func es preguntar si es valido el owner

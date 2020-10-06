@@ -32,12 +32,13 @@ type Boardgame struct {
 
 // Reuniones para jugar
 type Gamemeeting struct {
-	gorm.Model           //ya tiene el id
-	Place      string    `gorm:"unique;not null;size:100" json:"place"`
-	Scheduled  time.Time `json:"scheduled"`
-	OwnerId    uint      `json:"owner"`
-	Owner      User      `gorm:"foreignKey:OwnerId"`
-	GameId     uint      `json:"game"`
-	Boardgame  Boardgame `gorm:"foreignKey:OwnerId"`
-	MaxPlayers uint      `gorm:"not null;" json:"max_players"`
+	gorm.Model            //ya tiene el id
+	Place       string    `gorm:"unique;not null;size:100" json:"place"`
+	Scheduled   time.Time `gorm:"not null" json:"scheduled"`
+	OwnerId     uint
+	Owner       User `gorm:"foreignKey:OwnerId"`
+	BoardgameId uint
+	Boardgame   Boardgame `gorm:"foreignKey:BoardgameId"`
+	Players     []User    `gorm:"many2many:user_gamemeeting;"`
+	MaxPlayers  uint      `gorm:"not null;" json:"max_players"`
 }

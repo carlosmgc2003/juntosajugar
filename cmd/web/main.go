@@ -55,7 +55,9 @@ func main() {
 	// Migracion de los modelos de datos
 	db.AutoMigrate(&models.User{}, &models.Boardgame{}, &models.Gamemeeting{})
 	db.Model(&models.Gamemeeting{}).AddForeignKey("owner_id", "users(id)", "CASCADE", "CASCADE")
-	db.Model(&models.Gamemeeting{}).AddForeignKey("game_id", "boardgames(id)", "CASCADE", "CASCADE")
+	db.Model(&models.Gamemeeting{}).AddForeignKey("boardgame_id", "boardgames(id)", "CASCADE", "CASCADE")
+	db.Table("user_gamemeeting").AddForeignKey("gamemeeting_id", "gamemeetings(id)", "CASCADE", "CASCADE")
+	db.Table("user_gamemeeting").AddForeignKey("user_id", "users(id)", "CASCADE", "CASCADE")
 	// Objeto de tipo aplicacion con sus dos atributos.
 	session := sessions.New([]byte(*secret))
 	session.Lifetime = 12 * time.Hour
