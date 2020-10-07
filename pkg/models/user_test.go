@@ -114,7 +114,7 @@ func TestValidFilename(t *testing.T) {
 
 func TestUserSanitizeJson(t *testing.T) {
 	t.Run("with Valid Json", func(t *testing.T) {
-		mockData := User{Name: "Carlos Maceira", Email: "carlosmgc2003@yahoo.com.ar", DisplayPic: "foto_carlos.jpg"}
+		mockData := User{Name: "Carlos Maceira", Email: "carlosmgc2003@yahoo.com.ar", DisplayPic: "foto_carlos.jpg", HashedPassword: "carlos2020"}
 		mockJson, _ := json.Marshal(mockData)
 		err := mockData.FromJson(mockJson)
 		var got bool
