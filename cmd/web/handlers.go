@@ -241,7 +241,7 @@ func (app *application) boardgameCreation(w http.ResponseWriter, r *http.Request
 }
 
 func (app *application) boardgameRetrieval(w http.ResponseWriter, r *http.Request) {
-	// Manejador que dada una peticion con el id de usuario en la URI, devuelve los datos del mismo en Json
+	// Manejador que dada una peticion con el id del boardgame en la URI, devuelve los datos del mismo en Json
 	boardgameId, err := strconv.Atoi(r.URL.Query().Get(":id"))
 	if err != nil {
 		app.serverError(w, err)
@@ -296,6 +296,21 @@ func (app *application) boardgameDeletion(w http.ResponseWriter, r *http.Request
 	return
 }
 
+func (app *application) boardgameList(w http.ResponseWriter, r *http.Request) {
+	var boardgames []models.Boardgame
+	result := app.db.Find(&boardgames)
+
+	if result.Error != nil {
+		app.serverError(w, result.Error)
+		return
+	}
+	body, err := json.Marshal(boardgames)
+	if err != nil {
+		app.serverError(w, err)
+	}
+	app.responseJson(w, body)
+}
+
 func (app *application) gamemeetingCreation(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -319,4 +334,19 @@ func (app *application) gamemeetingCreation(w http.ResponseWriter, r *http.Reque
 	}
 	app.responseJson(w, body)
 	return
+}
+
+func (app *application) gamemeetingList(w http.ResponseWriter, r *http.Request) {
+	var gamemeetings []models.Gamemeeting
+	result := app.db.Find(&gamemeetings)
+
+	if result.Error != nil {
+		app.serverError(w, result.Error)
+		return
+	}
+	body, err := json.Marshal(gamemeetings)
+	if err != nil {
+		app.serverError(w, err)
+	}
+	app.responseJson(w, body)
 }

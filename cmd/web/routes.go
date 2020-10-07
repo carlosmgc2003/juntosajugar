@@ -16,6 +16,7 @@ func (app *application) routes() http.Handler {
 	// Rutas de regla de negocio
 	mux := pat.New()
 	mux.Get("/health_check", http.HandlerFunc(app.healthCheck))
+	// User Routes
 	mux.Post("/login", http.HandlerFunc(app.userLogin))
 	mux.Get("/logout", http.HandlerFunc(app.userLogout))
 	mux.Get("/user", securityMiddleware.ThenFunc(app.userList))
@@ -26,11 +27,15 @@ func (app *application) routes() http.Handler {
 	mux.Options("/user/:id", securityMiddleware.ThenFunc(app.userDeletion))
 	mux.Del("/user/:id", securityMiddleware.ThenFunc(app.userDeletion))
 
+	// Boardgame Routes
 	mux.Post("/boardgame", securityMiddleware.ThenFunc(app.boardgameCreation))
+	mux.Get("/boardgame", securityMiddleware.ThenFunc(app.boardgameList))
 	mux.Get("/boardgame/:id", http.HandlerFunc(app.boardgameRetrieval))
 	mux.Del("/boardgame/:id", http.HandlerFunc(app.boardgameDeletion))
 
+	// Gameemeting Routes
 	mux.Post("/gamemeeting", securityMiddleware.ThenFunc(app.gamemeetingCreation))
+	mux.Get("/gamemeeting", securityMiddleware.ThenFunc(app.gamemeetingList))
 
 	return standardMiddleware.Then(mux)
 }
