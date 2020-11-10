@@ -18,8 +18,10 @@ func secureHeaders(next http.Handler) http.Handler {
 func (app *application) withCORS(next http.Handler) http.Handler {
 	// para mostrar por la salida de log cada request que se le haga al server
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		// La peticion debe venir de un origen determinado, no vale *
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With")
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		// Stop here for a Preflighted OPTIONS request.
 		next.ServeHTTP(w, r)

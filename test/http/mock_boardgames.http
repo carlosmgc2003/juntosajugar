@@ -1,0 +1,18 @@
+###
+POST  http://localhost:4000/login
+Content-Type: application/json
+
+{
+  "email": "admin@juntosajugar.com",
+  "password": "123456"
+}
+> {% let session = response.headers.valueOf("session"); %}
+###
+GET  http://localhost:4000/user/email/admin@juntosajugar.com
+Cookie: {{session}}
+
+###
+
+###
+GET  http://localhost:4000/logout
+Cookie: {{session}}

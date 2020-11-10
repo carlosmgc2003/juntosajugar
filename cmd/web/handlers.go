@@ -38,6 +38,11 @@ func (app *application) healthCheck(w http.ResponseWriter, _ *http.Request) {
 
 func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 	if err != nil {
 		app.serverError(w, err)
 		return

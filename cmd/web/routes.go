@@ -17,6 +17,7 @@ func (app *application) routes() http.Handler {
 	mux := pat.New()
 	mux.Get("/health_check", http.HandlerFunc(app.healthCheck))
 	// User Routes
+	mux.Options("/login", http.HandlerFunc(app.userLogin))
 	mux.Post("/login", http.HandlerFunc(app.userLogin))
 	mux.Get("/logout", http.HandlerFunc(app.userLogout))
 	mux.Get("/user", securityMiddleware.ThenFunc(app.userList))
@@ -32,6 +33,18 @@ func (app *application) routes() http.Handler {
 	mux.Get("/boardgame", securityMiddleware.ThenFunc(app.boardgameList))
 	mux.Get("/boardgame/:id", http.HandlerFunc(app.boardgameRetrieval))
 	mux.Del("/boardgame/:id", http.HandlerFunc(app.boardgameDeletion))
+	/*
+		export const bggClient = axios.create({
+		    baseURL : "https://www.boardgamegeek.com/xmlapi/search?search=",
+		    mode: 'no-cors',
+		    headers: {
+		        'Access-Control-Allow-Origin': '*',
+		        'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, OPTIONS',
+		        'Content-Type': "application/xml; charset=utf-8",
+		    },
+		    withCredentials: true
+		})
+	*/
 
 	// Gameemeting Routes
 	mux.Post("/gamemeeting", securityMiddleware.ThenFunc(app.gamemeetingCreation))

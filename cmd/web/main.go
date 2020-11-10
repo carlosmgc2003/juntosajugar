@@ -61,6 +61,7 @@ func main() {
 	// Objeto de tipo aplicacion con sus dos atributos.
 	session := sessions.New([]byte(*secret))
 	session.Lifetime = 12 * time.Hour
+	session.HttpOnly = false
 
 	app := &application{
 		errorLog: errorLog,
@@ -70,9 +71,10 @@ func main() {
 	}
 
 	// Creacion del usuario Admin de JaJ
-	hashedAdminPass, _ := bcrypt.GenerateFromPassword([]byte("admin"), 12)
+	hashedAdminPass, _ := bcrypt.GenerateFromPassword([]byte("123456"), 12)
 
 	var adminUser models.User = models.User{
+		Name:           "Administrador",
 		Email:          "admin@juntosajugar.com",
 		HashedPassword: string(hashedAdminPass),
 	}
