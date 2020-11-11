@@ -17,6 +17,7 @@ var (
 	InvalidPlainPass   = errors.New("User Model: Invalid Pass")
 	InvalidHashPass    = errors.New("User Model: Error while hashing password")
 	InvalidCredentials = errors.New("User Model: Invalid Credentials")
+	InvalidJSON        = errors.New("User Model: Invalid JSON")
 )
 
 type Login struct {
@@ -52,7 +53,7 @@ func (U *User) FromJson(requestBody []byte) error {
 	var tempUser User
 	err := json.Unmarshal(requestBody, &tempUser)
 	if err != nil {
-		return err
+		return InvalidJSON
 	}
 	if !validUsername(tempUser.Name) {
 		return InvalidUserName
@@ -91,7 +92,7 @@ Hector Sausage-Hausen
 func validUsername(username string) bool {
 	// Validar el nombre de usuario de acuerdo a ese regex.
 	var re = regexp.MustCompile("^[[:alpha:] ,.'-]+$")
-	return re.MatchString(username) && len(username) <= 30 && len(username) >= 6
+	return re.MatchString(username) && len(username) <= 100 && len(username) >= 6
 }
 
 func validEmail(email string) bool {
