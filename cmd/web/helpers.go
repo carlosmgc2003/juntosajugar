@@ -3,9 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/go-sql-driver/mysql"
 	"net/http"
 	"runtime/debug"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 // Metodo para manejar los errores del servidor y mostrar informacion util para el debug (muestra el archivo)
@@ -31,7 +32,7 @@ func (app *application) clientError(w http.ResponseWriter, message string, statu
 	http.Error(w, string(js), status)
 }
 
-func (app *application) responseJson(w http.ResponseWriter, body []byte) {
+func (app *application) responseJSON(w http.ResponseWriter, body []byte) {
 	w.Header().Set("Content-Type", "application/json")
 	_, err := w.Write(body)
 	if err != nil {

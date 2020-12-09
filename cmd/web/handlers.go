@@ -109,7 +109,7 @@ func (app *application) userList(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		app.serverError(w, err)
 	}
-	app.responseJson(w, body)
+	app.responseJSON(w, body)
 }
 
 func (app *application) userCreation(w http.ResponseWriter, r *http.Request) {
@@ -136,13 +136,13 @@ func (app *application) userCreation(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		return
 	}
-	app.responseJson(w, body)
+	app.responseJSON(w, body)
 	return
 }
 
 func (app *application) userDeletion(w http.ResponseWriter, r *http.Request) {
 	// Manejador que dada una peticion con el id en la URI, elimina al usuario y devuelve un 200 vacío.
-	userId, err := strconv.Atoi(r.URL.Query().Get(":id"))
+	userID, err := strconv.Atoi(r.URL.Query().Get(":id"))
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		app.serverError(w, err)
@@ -150,7 +150,7 @@ func (app *application) userDeletion(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var delUser models.User
-	err = app.db.First(&delUser, userId).Error
+	err = app.db.First(&delUser, userID).Error
 	if err != nil && err.Error() == "record not found" {
 		app.clientError(w, err.Error(), 404)
 		return
@@ -163,20 +163,20 @@ func (app *application) userDeletion(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		return
 	}
-	app.responseJson(w, body)
+	app.responseJSON(w, body)
 	return
 }
 
 func (app *application) userRetrieval(w http.ResponseWriter, r *http.Request) {
 	// Manejador que dada una peticion con el id de usuario en la URI, devuelve los datos del mismo en Json
-	userId, err := strconv.Atoi(r.URL.Query().Get(":id"))
+	userID, err := strconv.Atoi(r.URL.Query().Get(":id"))
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 
 	var reqUser models.User
-	err = app.db.First(&reqUser, userId).Error
+	err = app.db.First(&reqUser, userID).Error
 	if err != nil && err.Error() == "record not found" {
 		app.clientError(w, err.Error(), 404)
 		return
@@ -189,7 +189,7 @@ func (app *application) userRetrieval(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		return
 	}
-	app.responseJson(w, body)
+	app.responseJSON(w, body)
 	return
 }
 
@@ -215,7 +215,7 @@ func (app *application) userRetrievalByEmail(w http.ResponseWriter, r *http.Requ
 		app.serverError(w, err)
 		return
 	}
-	app.responseJson(w, body)
+	app.responseJSON(w, body)
 	return
 }
 
@@ -241,20 +241,20 @@ func (app *application) boardgameCreation(w http.ResponseWriter, r *http.Request
 		app.serverError(w, err)
 		return
 	}
-	app.responseJson(w, body)
+	app.responseJSON(w, body)
 	return
 }
 
 func (app *application) boardgameRetrieval(w http.ResponseWriter, r *http.Request) {
 	// Manejador que dada una peticion con el id del boardgame en la URI, devuelve los datos del mismo en Json
-	boardgameId, err := strconv.Atoi(r.URL.Query().Get(":id"))
+	boardgameID, err := strconv.Atoi(r.URL.Query().Get(":id"))
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 
 	var reqBoardgame models.Boardgame
-	err = app.db.First(&reqBoardgame, boardgameId).Error
+	err = app.db.First(&reqBoardgame, boardgameID).Error
 	if err != nil && err.Error() == "record not found" {
 		app.clientError(w, err.Error(), 404)
 		return
@@ -268,23 +268,23 @@ func (app *application) boardgameRetrieval(w http.ResponseWriter, r *http.Reques
 		app.serverError(w, err)
 		return
 	}
-	app.responseJson(w, body)
+	app.responseJSON(w, body)
 	return
 }
 
 func (app *application) boardgameDeletion(w http.ResponseWriter, r *http.Request) {
 	// Manejador que dada una peticion con el id en la URI, elimina al usuario y devuelve un 200 vacío.
-	boardgameId, err := strconv.Atoi(r.URL.Query().Get(":id"))
+	boardgameID, err := strconv.Atoi(r.URL.Query().Get(":id"))
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 
-	app.infoLog.Println(boardgameId)
+	app.infoLog.Println(boardgameID)
 
 	var delBoardgame models.Boardgame
-	err = app.db.First(&delBoardgame, boardgameId).Error
+	err = app.db.First(&delBoardgame, boardgameID).Error
 	if err != nil && err.Error() == "record not found" {
 		app.clientError(w, err.Error(), 404)
 		return
@@ -297,7 +297,7 @@ func (app *application) boardgameDeletion(w http.ResponseWriter, r *http.Request
 		app.serverError(w, err)
 		return
 	}
-	app.responseJson(w, body)
+	app.responseJSON(w, body)
 	return
 }
 
@@ -313,7 +313,7 @@ func (app *application) boardgameList(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		app.serverError(w, err)
 	}
-	app.responseJson(w, body)
+	app.responseJSON(w, body)
 }
 
 func (app *application) gamemeetingCreation(w http.ResponseWriter, r *http.Request) {
@@ -337,7 +337,7 @@ func (app *application) gamemeetingCreation(w http.ResponseWriter, r *http.Reque
 		app.serverError(w, err)
 		return
 	}
-	app.responseJson(w, body)
+	app.responseJSON(w, body)
 	return
 }
 
@@ -353,5 +353,5 @@ func (app *application) gamemeetingList(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		app.serverError(w, err)
 	}
-	app.responseJson(w, body)
+	app.responseJSON(w, body)
 }

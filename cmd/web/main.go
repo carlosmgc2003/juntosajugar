@@ -2,15 +2,16 @@ package main
 
 import (
 	"flag"
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/golangcollege/sessions"
-	"github.com/jinzhu/gorm"
-	"golang.org/x/crypto/bcrypt"
 	"juntosajugar/pkg/models"
 	"log"
 	"net/http"
 	"os"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/golangcollege/sessions"
+	"github.com/jinzhu/gorm"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type application struct {
@@ -20,6 +21,7 @@ type application struct {
 	db       *gorm.DB
 }
 
+// RETRIES es la cantidad de veces que la API intenta conectarse con la BD
 const RETRIES int = 10
 
 func main() {
