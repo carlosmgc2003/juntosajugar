@@ -3,8 +3,9 @@ package models
 import (
 	"encoding/json"
 	"errors"
-	"github.com/jinzhu/gorm"
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 var (
