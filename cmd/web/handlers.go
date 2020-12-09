@@ -49,7 +49,7 @@ func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {
 	}
 	var newLogin models.Login
 	var tempUser models.User
-	err = newLogin.FromJson(body)
+	err = newLogin.FromJSON(body)
 	if err != nil {
 		app.clientError(w, err.Error(), 400)
 		return
@@ -122,7 +122,7 @@ func (app *application) userCreation(w http.ResponseWriter, r *http.Request) {
 	}
 	var newUser models.User
 
-	err = newUser.FromJson(body)
+	err = newUser.FromJSON(body)
 	if err != nil {
 		app.clientError(w, err.Error(), 400)
 		return

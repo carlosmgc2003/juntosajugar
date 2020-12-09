@@ -3,80 +3,85 @@ package models
 import (
 	"encoding/json"
 	"errors"
+	"regexp"
+
 	"github.com/jinzhu/copier"
 	"golang.org/x/crypto/bcrypt"
-	"regexp"
 )
 
 // Errores especificos del modelo user
 var (
-	InvalidUserName    = errors.New("User Model: Invalid Username")
-	InvalidEmail       = errors.New("User Model: Invalid Email")
-	InvalidUserPic     = errors.New("User Model: Invalid Filename")
-	InvalidIdToken     = errors.New("User Model: Invalid Id Token")
-	InvalidPlainPass   = errors.New("User Model: Invalid Pass")
-	InvalidHashPass    = errors.New("User Model: Error while hashing password")
-	InvalidCredentials = errors.New("User Model: Invalid Credentials")
-	InvalidJSON        = errors.New("User Model: Invalid JSON")
+	ErrInvalidUserName    = errors.New("User Model: Invalid Username")
+	ErrInvalidEmail       = errors.New("User Model: Invalid Email")
+	ErrInvalidUserPic     = errors.New("User Model: Invalid Filename")
+	ErrInvalidIDToken     = errors.New("User Model: Invalid Id Token")
+	ErrInvalidPlainPass   = errors.New("User Model: Invalid Pass")
+	ErrInvalidHashPass    = errors.New("User Model: Error while hashing password")
+	ErrInvalidCredentials = errors.New("User Model: Invalid Credentials")
+	ErrInvalidJSON        = errors.New("User Model: Invalid JSON")
 )
 
+// Login es un struct auxiliar para recibir los datos de login de usuario
 type Login struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-func (L *Login) FromJson(requestBody []byte) error {
+// FromJSON toma una slice de bytes JSON de login y guarda en el struct los datos.
+func (L *Login) FromJSON(requestBody []byte) error {
 	var tempLogin Login
 	err := json.Unmarshal(requestBody, &tempLogin)
 	if err != nil {
 		return err
 	}
 	if !validEmail(tempLogin.Email) {
-		return InvalidEmail
+		return ErrInvalidEmail
 	}
 	if !validPassword(tempLogin.Password) {
-		return InvalidPlainPass
+		return ErrInvalidPlainPass
 	}
 	err = copier.Copy(L, tempLogin)
 	return err
 }
 
+// Authenticate Valida el password con el hash guardado en la BD.
 func (U *User) Authenticate(loginData Login) error {
 	err := bcrypt.CompareHashAndPassword([]byte(U.HashedPassword), []byte(loginData.Password))
 	if err == bcrypt.ErrMismatchedHashAndPassword {
-		return InvalidCredentials
+		return ErrInvalidCredentials
 	}
 	return err
 }
 
-func (U *User) FromJson(requestBody []byte) error {
+// FromJSON toma un slice de byte con un JSON de usuario y lo carga en la instancia.
+func (U *User) FromJSON(requestBody []byte) error {
 	var tempUser User
 	err := json.Unmarshal(requestBody, &tempUser)
 	if err != nil {
-		return InvalidJSON
+		return ErrInvalidJSON
 	}
 	if !validUsername(tempUser.Name) {
-		return InvalidUserName
+		return ErrInvalidUserName
 	}
 	U.Name = tempUser.Name
 	if !validEmail(tempUser.Email) {
-		return InvalidEmail
+		return ErrInvalidEmail
 	}
 	U.Email = tempUser.Email
 	if !validUserPic(tempUser.DisplayPic) {
-		return InvalidUserPic
+		return ErrInvalidUserPic
 	}
 	U.DisplayPic = tempUser.DisplayPic
-	if !validIdToken(tempUser.IdToken) {
-		return InvalidIdToken
+	if !validIDToken(tempUser.IDtoken) {
+		return ErrInvalidIDToken
 	}
-	U.IdToken = tempUser.IdToken
+	U.IDtoken = tempUser.IDtoken
 	if !validPassword(tempUser.HashedPassword) {
-		return InvalidPlainPass
+		return ErrInvalidPlainPass
 	}
 	hash, err := bcrypt.GenerateFromPassword([]byte(tempUser.HashedPassword), 12)
 	if err != nil {
-		return InvalidHashPass
+		return ErrInvalidHashPass
 	}
 	U.HashedPassword = string(hash)
 	return err
@@ -106,7 +111,7 @@ func validUserPic(filename string) bool {
 	return len(filename) <= 100
 }
 
-func validIdToken(token string) bool {
+func validIDToken(token string) bool {
 	return len(token) <= 1500
 }
 
