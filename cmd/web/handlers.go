@@ -68,6 +68,7 @@ func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {
 	}
 	app.session.Put(r, "email", tempUser.Email)
 	app.session.Put(r, "user_id", tempUser.ID)
+	w.Write([]byte(`{"status":"OK"}`))
 	return
 }
 
@@ -136,6 +137,12 @@ func (app *application) userCreation(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		return
 	}
+
+	body, err = json.Marshal(&newUser)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
 	app.responseJSON(w, body)
 	return
 }
@@ -184,7 +191,166 @@ func (app *application) userRetrieval(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		return
 	}
+
+	bgCount := app.db.Model(&reqUser).Association("UserBoardgames").Count()
+	bgSlice := make([]models.Boardgame, bgCount)
+	err = app.db.Model(&reqUser).Association("UserBoardgames").Find(&bgSlice).Error
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	reqUser.UserBoardgames = bgSlice
+
 	body, err := json.Marshal(&reqUser)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	app.responseJSON(w, body)
+	return
+}
+
+func (app *application) userAddBoardgame(w http.ResponseWriter, r *http.Request) {
+	data := struct {
+		UserID      int `json:"user_id"`
+		BoardgameID int `json:"boardgame_id"`
+	}{}
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		app.clientError(w, err.Error(), http.StatusBadRequest)
+	}
+
+	var bgUser models.User
+	err = app.db.First(&bgUser, data.UserID).Error
+	if err != nil && err.Error() == "record not found" {
+		app.clientError(w, err.Error(), 404)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	var bg models.Boardgame
+	err = app.db.First(&bg, data.BoardgameID).Error
+	if err != nil && err.Error() == "record not found" {
+		app.clientError(w, err.Error(), 404)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	err = app.db.Model(&bgUser).Association("UserBoardgames").Append(&bg).Error
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	body, err = json.Marshal(&bgUser)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	app.responseJSON(w, body)
+	return
+}
+
+func (app *application) userListBoardgames(w http.ResponseWriter, r *http.Request) {
+	data := struct {
+		UserID int `json:"user_id"`
+	}{}
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		app.clientError(w, err.Error(), http.StatusBadRequest)
+	}
+
+	var bgUser models.User
+	err = app.db.First(&bgUser, data.UserID).Error
+	if err != nil && err.Error() == "record not found" {
+		app.clientError(w, err.Error(), 404)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	bgCount := app.db.Model(&bgUser).Association("UserBoardgames").Count()
+	bgSlice := make([]models.Boardgame, bgCount)
+	err = app.db.Model(&bgUser).Association("UserBoardgames").Find(&bgSlice).Error
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	body, err = json.Marshal(&bgSlice)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	app.responseJSON(w, body)
+	return
+}
+
+func (app *application) userDelBoardgames(w http.ResponseWriter, r *http.Request) {
+	data := struct {
+		UserID int `json:"user_id"`
+	}{}
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		app.clientError(w, err.Error(), http.StatusBadRequest)
+	}
+
+	var bgUser models.User
+	err = app.db.First(&bgUser, data.UserID).Error
+	if err != nil && err.Error() == "record not found" {
+		app.clientError(w, err.Error(), 404)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	encodedParameter := r.URL.Query().Get(":id")
+	bgIDstring, err := url.QueryUnescape(encodedParameter)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	bgID, err := strconv.Atoi(bgIDstring)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	var bgDel models.Boardgame
+	err = app.db.First(&bgDel, bgID).Error
+	if err != nil && err.Error() == "record not found" {
+		app.clientError(w, err.Error(), 404)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	err = app.db.Model(&bgUser).Association("UserBoardgames").Delete(bgDel).Error
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	body, err = json.Marshal(&bgDel)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -210,6 +376,16 @@ func (app *application) userRetrievalByEmail(w http.ResponseWriter, r *http.Requ
 		app.serverError(w, err)
 		return
 	}
+
+	bgCount := app.db.Model(&reqUser).Association("UserBoardgames").Count()
+	bgSlice := make([]models.Boardgame, bgCount)
+	err = app.db.Model(&reqUser).Association("UserBoardgames").Find(&bgSlice).Error
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	reqUser.UserBoardgames = bgSlice
+
 	body, err := json.Marshal(&reqUser)
 	if err != nil {
 		app.serverError(w, err)
@@ -238,6 +414,12 @@ func (app *application) boardgameCreation(w http.ResponseWriter, r *http.Request
 		app.clientError(w, err.Error(), 409)
 		return
 	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	body, err = json.Marshal(&newBoardgame)
+	if err != nil {
 		app.serverError(w, err)
 		return
 	}
