@@ -260,21 +260,13 @@ func (app *application) userAddBoardgame(w http.ResponseWriter, r *http.Request)
 }
 
 func (app *application) userListBoardgames(w http.ResponseWriter, r *http.Request) {
-	data := struct {
-		UserID int `json:"user_id"`
-	}{}
-	body, err := ioutil.ReadAll(r.Body)
+	userID, err := strconv.Atoi(r.URL.Query().Get(":id"))
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
-	err = json.Unmarshal(body, &data)
-	if err != nil {
-		app.clientError(w, err.Error(), http.StatusBadRequest)
-	}
-
 	var bgUser models.User
-	err = app.db.First(&bgUser, data.UserID).Error
+	err = app.db.First(&bgUser, userID).Error
 	if err != nil && err.Error() == "record not found" {
 		app.clientError(w, err.Error(), 404)
 		return
@@ -291,7 +283,7 @@ func (app *application) userListBoardgames(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	body, err = json.Marshal(&bgSlice)
+	body, err := json.Marshal(&bgSlice)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -301,43 +293,28 @@ func (app *application) userListBoardgames(w http.ResponseWriter, r *http.Reques
 }
 
 func (app *application) userDelBoardgames(w http.ResponseWriter, r *http.Request) {
-	data := struct {
-		UserID int `json:"user_id"`
-	}{}
-	body, err := ioutil.ReadAll(r.Body)
+	userID, err := strconv.Atoi(r.URL.Query().Get(":user_id"))
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
-	err = json.Unmarshal(body, &data)
+	bgID, err := strconv.Atoi(r.URL.Query().Get(":bg_id"))
 	if err != nil {
-		app.clientError(w, err.Error(), http.StatusBadRequest)
+		app.serverError(w, err)
+		return
 	}
-
 	var bgUser models.User
-	err = app.db.First(&bgUser, data.UserID).Error
-	if err != nil && err.Error() == "record not found" {
+	err = app.db.First(&bgUser, userID).Error
+	if err != nil && err.Error() == "User not found" {
 		app.clientError(w, err.Error(), 404)
 		return
 	} else if err != nil {
 		app.serverError(w, err)
 		return
 	}
-
-	encodedParameter := r.URL.Query().Get(":id")
-	bgIDstring, err := url.QueryUnescape(encodedParameter)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-	bgID, err := strconv.Atoi(bgIDstring)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
 	var bgDel models.Boardgame
 	err = app.db.First(&bgDel, bgID).Error
-	if err != nil && err.Error() == "record not found" {
+	if err != nil && err.Error() == "Boardgame not found" {
 		app.clientError(w, err.Error(), 404)
 		return
 	} else if err != nil {
@@ -349,8 +326,7 @@ func (app *application) userDelBoardgames(w http.ResponseWriter, r *http.Request
 		app.serverError(w, err)
 		return
 	}
-
-	body, err = json.Marshal(&bgDel)
+	body, err := json.Marshal(&bgDel)
 	if err != nil {
 		app.serverError(w, err)
 		return
