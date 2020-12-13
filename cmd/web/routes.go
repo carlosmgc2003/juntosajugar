@@ -28,12 +28,13 @@ func (app *application) routes() http.Handler {
 	mux.Get("/user/email/:email", http.HandlerFunc(app.userRetrievalByEmail))
 	mux.Options("/user/:id", securityMiddleware.ThenFunc(app.userDeletion))
 	mux.Del("/user/:id", securityMiddleware.ThenFunc(app.userDeletion))
-	mux.Post("/user/boardgames", securityMiddleware.ThenFunc(app.userAddBoardgame))
+	mux.Post("/user/:id/boardgames", securityMiddleware.ThenFunc(app.userAddBoardgame))
 	mux.Del("/user/:user_id/boardgames/:bg_id", securityMiddleware.ThenFunc(app.userDelBoardgames))
 
 	// Boardgame Routes
 	mux.Post("/boardgame", securityMiddleware.ThenFunc(app.boardgameCreation))
 	mux.Get("/boardgame", securityMiddleware.ThenFunc(app.boardgameList))
+	mux.Get("/boardgame/name/:name", securityMiddleware.ThenFunc(app.boardgameByName))
 	mux.Get("/boardgame/:id", http.HandlerFunc(app.boardgameRetrieval))
 	mux.Del("/boardgame/:id", http.HandlerFunc(app.boardgameDeletion))
 

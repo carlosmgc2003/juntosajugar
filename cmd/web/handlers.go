@@ -211,8 +211,12 @@ func (app *application) userRetrieval(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) userAddBoardgame(w http.ResponseWriter, r *http.Request) {
+	userID, err := strconv.Atoi(r.URL.Query().Get(":id"))
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
 	data := struct {
-		UserID      int `json:"user_id"`
 		BoardgameID int `json:"boardgame_id"`
 	}{}
 
@@ -227,7 +231,7 @@ func (app *application) userAddBoardgame(w http.ResponseWriter, r *http.Request)
 	}
 
 	var bgUser models.User
-	err = app.db.First(&bgUser, data.UserID).Error
+	err = app.db.First(&bgUser, userID).Error
 	if err != nil && err.Error() == "record not found" {
 		app.clientError(w, err.Error(), 404)
 		return
@@ -472,6 +476,31 @@ func (app *application) boardgameList(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 	}
 	app.responseJSON(w, body)
+}
+
+func (app *application) boardgameByName(w http.ResponseWriter, r *http.Request) {
+	encodedParameter := r.URL.Query().Get(":name")
+	bgName, err := url.QueryUnescape(encodedParameter)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	var reqBoardgame models.Boardgame
+	err = app.db.Where("name = ?", bgName).First(&reqBoardgame).Error
+	if err != nil && err.Error() == "record not found" {
+		app.clientError(w, err.Error(), 404)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	body, err := json.Marshal(&reqBoardgame)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	app.responseJSON(w, body)
+	return
 }
 
 func (app *application) gamemeetingCreation(w http.ResponseWriter, r *http.Request) {

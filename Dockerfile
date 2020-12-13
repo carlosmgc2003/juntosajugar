@@ -1,6 +1,6 @@
 
 
-FROM golang:1.15
+FROM golang
 
 # Creo una carpeta para mi codigo y lo copio en ella
 WORKDIR /go/src/juntosajugar
