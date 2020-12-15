@@ -42,8 +42,10 @@ func (app *application) routes() http.Handler {
 	mux.Post("/gamemeeting", securityMiddleware.ThenFunc(app.gamemeetingCreation))
 	mux.Get("/gamemeeting", securityMiddleware.ThenFunc(app.gamemeetingList))
 	mux.Get("/gamemeeting/user/:id", securityMiddleware.ThenFunc(app.userParticipatesGamemeetings))
+	mux.Options("/gamemeeting/:id", http.HandlerFunc(app.preflightHandler))
 	mux.Get("/gamemeeting/:id/join/:user_id", securityMiddleware.ThenFunc(app.joinUserToGamemeeting))
 	mux.Get("/gamemeeting/:id/disjoin/:user_id", securityMiddleware.ThenFunc(app.disjoinUserToGamemeeting))
+	mux.Del("/gamemeeting/:id", securityMiddleware.ThenFunc(app.deleteUserGamemeeting))
 
 	return standardMiddleware.Then(mux)
 }

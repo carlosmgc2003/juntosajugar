@@ -671,3 +671,64 @@ func (app *application) userParticipatesGamemeetings(w http.ResponseWriter, r *h
 	}
 	app.responseJSON(w, body)
 }
+
+func (app *application) deleteUserGamemeeting(w http.ResponseWriter, r *http.Request) {
+	gameID, err := strconv.Atoi(r.URL.Query().Get(":id"))
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	headerData := r.Header.Get("Authorization")
+	userID, err := strconv.Atoi(headerData)
+	if err != nil {
+		app.clientError(w, "Invalid Header Data", 401)
+		return
+	}
+	var gamemeeting models.Gamemeeting
+	err = app.db.First(&gamemeeting, gameID).Error
+	if err != nil && err.Error() == "record not found" {
+		app.clientError(w, err.Error(), 404)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	err = gamemeeting.PopulateGamemeeting(app.db)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	var ownerUser models.User
+	err = app.db.First(&ownerUser, userID).Error
+	if err != nil && err.Error() == "record not found" {
+		app.clientError(w, err.Error(), 404)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	if ownerUser.ID != gamemeeting.OwnerID {
+		app.clientError(w, "Unathorized to eliminate gamemeeting", 401)
+		return
+	}
+	err = app.db.Model(&gamemeeting).Association("Players").Clear().Error
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	err = app.db.Delete(&gamemeeting).Error
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	body, err := json.Marshal(gamemeeting)
+	if err != nil {
+		app.serverError(w, err)
+	}
+	app.responseJSON(w, body)
+}
+
+func (app *application) preflightHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	return
+}
