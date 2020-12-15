@@ -16,6 +16,7 @@ var (
 	InvalidMaxPlayers      = errors.New("Gamemeeting Model: Invalid Max Players Quantity")
 	InvalidTooManyPlayers  = errors.New("Gamemeeting Model: Too many players JSON")
 	InvalidPlayer          = errors.New("Gamemeeting Model: Invalid Player")
+	InvalidPlayerSameOwner = errors.New("Gamemeeting Model: Player is the same as owner")
 )
 
 func (G *Gamemeeting) FromJson(requestBody []byte, db *gorm.DB) error {
@@ -83,6 +84,45 @@ func (G *Gamemeeting) FromJson(requestBody []byte, db *gorm.DB) error {
 	}
 
 	return err
+}
+
+func (G *Gamemeeting) AddUser(db *gorm.DB, user User) error {
+	if G.OwnerID != user.ID {
+		err := db.Model(&G).Association("Players").Append(&user).Error
+		if err != nil {
+			return err
+		}
+	} else {
+		return InvalidPlayerSameOwner
+	}
+	return nil
+}
+func (G *Gamemeeting) RemoveUser(db *gorm.DB, user User) error {
+	err := db.Model(&G).Association("Players").Delete(user).Error
+	return err
+}
+
+func (G *Gamemeeting) PopulateGamemeeting(db *gorm.DB) error {
+	var owner User
+	err := db.First(&owner, G.OwnerID).Error
+	if err != nil {
+		return err
+	}
+	G.Owner = owner
+	var boardgame Boardgame
+	err = db.First(&boardgame, G.BoardgameID).Error
+	if err != nil {
+		return err
+	}
+	G.Boardgame = boardgame
+	playersCount := db.Model(&G).Association("Players").Count()
+	players := make([]User, playersCount)
+	err = db.Model(&G).Association("Players").Find(&players).Error
+	if err != nil {
+		return err
+	}
+	G.Players = players
+	return nil
 }
 
 func validMeetingPlace(meetingplace string) bool {

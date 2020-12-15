@@ -531,12 +531,141 @@ func (app *application) gamemeetingCreation(w http.ResponseWriter, r *http.Reque
 func (app *application) gamemeetingList(w http.ResponseWriter, r *http.Request) {
 	var gamemeetings []models.Gamemeeting
 	result := app.db.Find(&gamemeetings)
-
 	if result.Error != nil {
 		app.serverError(w, result.Error)
 		return
 	}
+	if result.RowsAffected >= 0 {
+		for i := range gamemeetings {
+			gamemeetings[i].PopulateGamemeeting(app.db)
+		}
+	}
 	body, err := json.Marshal(gamemeetings)
+	if err != nil {
+		app.serverError(w, err)
+	}
+	app.responseJSON(w, body)
+}
+
+func (app *application) joinUserToGamemeeting(w http.ResponseWriter, r *http.Request) {
+	meetID, err := strconv.Atoi(r.URL.Query().Get(":id"))
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	userID, err := strconv.Atoi(r.URL.Query().Get(":user_id"))
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	var meetMod models.Gamemeeting
+	var userMod models.User
+	err = app.db.First(&meetMod, meetID).Error
+	if err != nil && err.Error() == "record not found" {
+		app.clientError(w, err.Error(), 404)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	err = app.db.First(&userMod, userID).Error
+	if err != nil && err.Error() == "record not found" {
+		app.clientError(w, err.Error(), 404)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	err = meetMod.AddUser(app.db, userMod)
+	if err != nil && err.Error() == "Gamemeeting Model: Player is the same as owner" {
+		app.clientError(w, err.Error(), 404)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+}
+
+func (app *application) disjoinUserToGamemeeting(w http.ResponseWriter, r *http.Request) {
+	meetID, err := strconv.Atoi(r.URL.Query().Get(":id"))
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	userID, err := strconv.Atoi(r.URL.Query().Get(":user_id"))
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	var meetMod models.Gamemeeting
+	var userMod models.User
+	err = app.db.First(&meetMod, meetID).Error
+	if err != nil && err.Error() == "record not found" {
+		app.clientError(w, err.Error(), 404)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	err = app.db.First(&userMod, userID).Error
+	if err != nil && err.Error() == "record not found" {
+		app.clientError(w, err.Error(), 404)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	err = meetMod.AddUser(app.db, userMod)
+	if err != nil && err.Error() == "Gamemeeting Model: Player is the same as owner" {
+		app.clientError(w, err.Error(), 404)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+}
+
+func (app *application) userParticipatesGamemeetings(w http.ResponseWriter, r *http.Request) {
+	userID, err := strconv.Atoi(r.URL.Query().Get(":id"))
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	var reqUser models.User
+	err = app.db.First(&reqUser, userID).Error
+	if err != nil && err.Error() == "record not found" {
+		app.clientError(w, err.Error(), 404)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	var gamemeetings []models.Gamemeeting
+	var userParticipates []models.Gamemeeting
+
+	result := app.db.Find(&gamemeetings)
+	if result.Error != nil {
+		app.serverError(w, result.Error)
+		return
+	}
+	if result.RowsAffected >= 0 {
+		for i := range gamemeetings {
+			gamemeetings[i].PopulateGamemeeting(app.db)
+			for _, player := range gamemeetings[i].Players {
+				if player.ID == reqUser.ID {
+					userParticipates = append(userParticipates, gamemeetings[i])
+					continue
+				}
+			}
+		}
+	}
+	body, err := json.Marshal(userParticipates)
 	if err != nil {
 		app.serverError(w, err)
 	}
