@@ -585,7 +585,8 @@ func (app *application) joinUserToGamemeeting(w http.ResponseWriter, r *http.Req
 		app.serverError(w, err)
 		return
 	}
-
+	w.WriteHeader(http.StatusOK)
+	return
 }
 
 func (app *application) disjoinUserToGamemeeting(w http.ResponseWriter, r *http.Request) {
@@ -618,7 +619,7 @@ func (app *application) disjoinUserToGamemeeting(w http.ResponseWriter, r *http.
 		return
 	}
 
-	err = meetMod.AddUser(app.db, userMod)
+	err = meetMod.RemoveUser(app.db, userMod)
 	if err != nil && err.Error() == "Gamemeeting Model: Player is the same as owner" {
 		app.clientError(w, err.Error(), 404)
 		return
@@ -626,7 +627,8 @@ func (app *application) disjoinUserToGamemeeting(w http.ResponseWriter, r *http.
 		app.serverError(w, err)
 		return
 	}
-
+	w.WriteHeader(http.StatusOK)
+	return
 }
 
 func (app *application) userParticipatesGamemeetings(w http.ResponseWriter, r *http.Request) {
