@@ -60,5 +60,5 @@ func find(slice []string, val string) (int, bool) {
 
 func validGamePic(filename string) bool {
 	// Validar el nombre de archivo
-	return len(filename) >= 10 && len(filename) <= 50
+	return len(filename) >= 0 && len(filename) <= 50
 }
