@@ -36,7 +36,7 @@ type Boardgame struct {
 // Gamemeeting Reuniones para jugar
 type Gamemeeting struct {
 	gorm.Model            //ya tiene el id
-	Place       string    `gorm:"unique;not null;size:100" json:"place"`
+	Place       string    `gorm:"not null;size:100" json:"place"`
 	Scheduled   time.Time `gorm:"not null" json:"scheduled"`
 	OwnerID     uint
 	Owner       User `gorm:"foreignKey:OwnerId"`
