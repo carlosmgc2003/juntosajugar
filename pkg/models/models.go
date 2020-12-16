@@ -30,7 +30,7 @@ type Boardgame struct {
 	gorm.Model        //ya tiene el id
 	Name       string `gorm:"unique;not null;size:100" json:"name"`
 	Class      string `gorm:"not null;size:40" json:"class"`
-	DisplayPic string `gorm:"unique;size:100" json:"display_pic_route"`
+	DisplayPic string `gorm:"size:100" json:"display_pic_route"`
 }
 
 // Gamemeeting Reuniones para jugar
